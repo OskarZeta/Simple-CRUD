@@ -4,22 +4,31 @@ import { getGenresQuery, removeGenreQuery } from "../../queries/queries";
 import style from "../../styles/table.js";
 import Popup from "../Popup/Popup";
 import GenreForm from "../GenreForm/GenreForm";
+import GenresTableEdit from "../GenresTableEdit/GenresTableEdit";
 import WithDelete from "../WithDelete/WithDelete";
 import EmptyTable from "../EmptyTable/EmptyTable";
 
-const GenresTable = ({ mode, id, deleteHandler }) => {
+const GenresTable = ({ deleteHandler }) => {
   return (
     <div className="table__wrapper">
-      <Query query={getGenresQuery}>
+      <h2 className="table__name">Genres</h2>
+      <Popup trigger={<button className="table__add">Add genre</button>}>
+        <div>
+          <GenreForm
+            formType="add-genre"
+            defaultState={{
+              name: "",
+              genreIds: new Set(),
+              description: ""
+            }}
+          />
+        </div>
+      </Popup>
+      <Query query={getGenresQuery} fetchPolicy='network-only'>
         {({ loading, error, data, client }) => {
           if (loading) return <div>Loading genres...</div>;
           if (error) return <div>Error! ${error.message}</div>;
-          let source = [];
-          if (mode !== "edit") {
-            source = data.genres;
-          } else {
-            source.push(data.genres.find(genre => genre.id === id));
-          }
+          let source = data.genres;
           return (
             <table className="table">
               <tbody>
@@ -27,14 +36,14 @@ const GenresTable = ({ mode, id, deleteHandler }) => {
                   <th className="table__cell">Genre name</th>
                   <th className="table__cell">Related genres</th>
                   <th className="table__cell">Description</th>
+                  <th className="table__cell">Actions</th>
                 </tr>
-                {source.length === 0 ? <EmptyTable name="genres" size="3"/> : source.map(genre => {
+                {source.length === 0 ? <EmptyTable name="genres" size="4"/> : source.map(genre => {
                   return (
                     <tr key={genre.id}>
                       <td className="table__cell">{genre.name}</td>
-                      {genre.relatedGenres.length === 0 ? (
-                        <td className="table__cell">no related genres</td>
-                      ) : (
+                      {genre.relatedGenres.length === 0 ?
+                        <td className="table__cell">no related genres</td> :
                         <td className="table__cell">
                           <table>
                             <tbody>
@@ -48,29 +57,27 @@ const GenresTable = ({ mode, id, deleteHandler }) => {
                             </tbody>
                           </table>
                         </td>
-                      )}
+                      }
                       <td className="table__cell">{genre.description}</td>
-                      {mode !== "edit" && (
-                        <td className="table__cell">
-                          <Popup trigger={<span>Edit</span>}>
-                            <div>
-                              <GenresTable mode="edit" id={genre.id} />
-                              <GenreForm
-                                formType="edit-genre"
-                                defaultState={{
-                                  id: genre.id,
-                                  name: genre.name,
-                                  genreIds: new Set(genre.relatedGenres.map(genre => genre.id)),
-                                  description: genre.description
-                                }}
-                              />
-                            </div>
-                          </Popup>
-                          <button onClick={(id, queryName) => {deleteHandler(genre.id, "removeGenreQuery");}}>
-                            Delete
-                          </button>
-                        </td>
-                      )}
+                      <td className="table__cell">
+                        <Popup trigger={<button className="table__edit">Edit</button>}>
+                          <div>
+                            <GenresTableEdit id={genre.id} />
+                            <GenreForm
+                              formType="edit-genre"
+                              defaultState={{
+                                id: genre.id,
+                                name: genre.name,
+                                genreIds: new Set(genre.relatedGenres.map(genre => genre.id)),
+                                description: genre.description
+                              }}
+                            />
+                          </div>
+                        </Popup>
+                        <button className="table__delete" onClick={(id, queryName) => {deleteHandler(genre.id, "removeGenreQuery");}}>
+                          <span>Delete</span>
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}

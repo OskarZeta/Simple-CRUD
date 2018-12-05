@@ -5,7 +5,8 @@ class Popup extends Component {
   state = { isOpen: false };
   clickHandler(e){
     if (e) {
-      if (e.target.classList.contains('popup')){
+      e.preventDefault();
+      if (e.target.classList.contains('popup') || e.target.classList.contains('form-add__close')){
         e.stopPropagation();
         this.setState({
           isOpen: !this.state.isOpen
@@ -18,11 +19,12 @@ class Popup extends Component {
     }
   }
   render(){
+    //className="popup__btn"
     return(
       <div>
-        <button onClick={() => {this.clickHandler()}}>
+        <div onClick={() => {this.clickHandler()}}>
           {this.props.trigger}
-        </button>
+        </div>
         {this.state.isOpen &&
           <div className="popup" onClick={(e) => {this.clickHandler(e)}}>
             <div className="popup__wrapper">

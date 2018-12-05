@@ -4,7 +4,7 @@ const WithDelete = ButtonComponent =>
   class extends Component {
     deleteHandler(id, queryName) {
       const query = this.props[queryName];
-      const modal = window.confirm("Are you sure?");
+      const modal = window.confirm("Are you sure that you want to delete this entry?");
       if (modal) {
         query({
           variables: {

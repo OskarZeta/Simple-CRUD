@@ -4,22 +4,32 @@ import { getAuthorsQuery, removeAuthorQuery } from "../../queries/queries";
 import style from "../../styles/table.js";
 import Popup from "../Popup/Popup";
 import AuthorForm from "../AuthorForm/AuthorForm";
+import AuthorsTableEdit from "../AuthorsTableEdit/AuthorsTableEdit";
 import WithDelete from "../WithDelete/WithDelete";
 import EmptyTable from "../EmptyTable/EmptyTable";
 
-const AuthorsTable = ({ mode, id, deleteHandler }) => {
+const AuthorsTable = ({ deleteHandler }) => {
   return (
     <div className="table__wrapper">
-      <Query query={getAuthorsQuery}>
-        {({ loading, error, data, client }) => {
+      <h2 className="table__name">Authors</h2>
+      <Popup trigger={<button className="table__add">Add author</button>}>
+        <div>
+          <AuthorForm
+            formType="add-author"
+            defaultState={{
+              name: "",
+              genreIds: new Set(),
+              influenceIds: new Set(),
+              biography: ""
+            }}
+          />
+        </div>
+      </Popup>
+      <Query query={getAuthorsQuery} fetchPolicy='network-only'>
+        {({ loading, error, data }) => {
           if (loading) return <div>Loading authors...</div>;
           if (error) return <div>Error! ${error.message}</div>;
-          let source = [];
-          if (mode !== "edit") {
-            source = data.authors;
-          } else {
-            source.push(data.authors.find(author => author.id === id));
-          }
+          let source = data.authors;
           return (
             <table className="table">
               <tbody>
@@ -28,14 +38,14 @@ const AuthorsTable = ({ mode, id, deleteHandler }) => {
                   <th className="table__cell">Influenced authors</th>
                   <th className="table__cell">Genres</th>
                   <th className="table__cell">Books</th>
+                  <th className="table__cell">Actions</th>
                 </tr>
-                {source.length === 0 ? <EmptyTable name="authors" size="4"/>: source.map(author => {
+                {source.length === 0 ? <EmptyTable name="authors" size="5"/> : source.map(author => {
                   return (
                     <tr key={author.id}>
                       <td className="table__cell">{author.name}</td>
-                      {author.influencedAuthors.length === 0 ? (
-                        <td className="table__cell">no influenced authors</td>
-                      ) : (
+                      {author.influencedAuthors.length === 0 ?
+                        <td className="table__cell">no influenced authors</td> :
                         <td className="table__cell">
                           <table>
                             <tbody>
@@ -49,10 +59,9 @@ const AuthorsTable = ({ mode, id, deleteHandler }) => {
                             </tbody>
                           </table>
                         </td>
-                      )}
-                      {author.genres.length === 0 ? (
-                        <td className="table__cell">no genres</td>
-                      ) : (
+                      }
+                      {author.genres.length === 0 ?
+                        <td className="table__cell">no genres</td> :
                         <td className="table__cell">
                           <table>
                             <tbody>
@@ -66,10 +75,9 @@ const AuthorsTable = ({ mode, id, deleteHandler }) => {
                             </tbody>
                           </table>
                         </td>
-                      )}
-                      {author.books.length === 0 ? (
-                        <td className="table__cell">no books available</td>
-                      ) : (
+                      }
+                      {author.books.length === 0 ?
+                        <td className="table__cell">no books available</td> :
                         <td className="table__cell">
                           <table>
                             <tbody>
@@ -83,34 +91,29 @@ const AuthorsTable = ({ mode, id, deleteHandler }) => {
                             </tbody>
                           </table>
                         </td>
-                      )}
-                      {mode !== "edit" && (
-                        <td className="table__cell">
-                          <Popup trigger={<span>Edit</span>}>
-                            <div>
-                              <AuthorsTable mode="edit" id={author.id} />
-                              <AuthorForm
-                                formType="edit-author"
-                                defaultState={{
-                                  id: author.id,
-                                  name: author.name,
-                                  born: author.born,
-                                  died: author.died,
-                                  birthplace: author.birthplace,
-                                  genreIds: new Set(author.genres.map(genre => genre.id)),
-                                  influenceIds: new Set(
-                                    author.influencedAuthors.map(author => author.id)
-                                  ),
-                                  biography: author.biography
-                                }}
-                              />
-                            </div>
-                          </Popup>
-                          <button onClick={(id, queryName) => {deleteHandler(author.id, "removeAuthorQuery");}}>
-                            Delete
-                          </button>
-                        </td>
-                      )}
+                      }
+                      <td className="table__cell">
+                        <Popup trigger={<button className="table__edit">Edit</button>}>
+                          <div>
+                            <AuthorsTableEdit id={author.id} />
+                            <AuthorForm
+                              formType="edit-author"
+                              defaultState={{
+                                id: author.id,
+                                name: author.name,
+                                genreIds: new Set(author.genres.map(genre => genre.id)),
+                                influenceIds: new Set(
+                                  author.influencedAuthors.map(author => author.id)
+                                ),
+                                biography: author.biography
+                              }}
+                            />
+                          </div>
+                        </Popup>
+                        <button className="table__delete" onClick={(id, queryName) => {deleteHandler(author.id, "removeAuthorQuery");}}>
+                          <span>Delete</span>
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}

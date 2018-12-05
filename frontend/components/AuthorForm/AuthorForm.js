@@ -8,6 +8,7 @@ import {
   getGenresQuery
 } from "../../queries/queries";
 import WithCRU from "../WithCRU/WithCRU";
+import LinkCustom from "../LinkCustom/LinkCustom";
 import style from "../../styles/form_add.js";
 
 const AuthorForm = ({
@@ -27,7 +28,7 @@ const AuthorForm = ({
     <div>
       <section className="form-add">
         <label className="form-add__label">
-          <span className="form-add__name">Add name</span>
+          <span className="form-add__name">Name</span>
           <input
             className="form-add__input"
             name="name"
@@ -40,46 +41,7 @@ const AuthorForm = ({
           />
         </label>
         <label className="form-add__label">
-          <span className="form-add__name">Add date of birth</span>
-          <input
-            className="form-add__input"
-            type="text"
-            name="born"
-            placeholder="enter date"
-            value={wrapProps.born}
-            onChange={e => {
-              changeHandler(e);
-            }}
-          />
-        </label>
-        <label className="form-add__label">
-          <span className="form-add__name">Add date of death (if dead)</span>
-          <input
-            className="form-add__input"
-            type="text"
-            name="died"
-            placeholder="enter date"
-            value={wrapProps.died}
-            onChange={e => {
-              changeHandler(e);
-            }}
-          />
-        </label>
-        <label className="form-add__label">
-          <span className="form-add__name">Add place of birth</span>
-          <input
-            className="form-add__input"
-            type="text"
-            name="birthplace"
-            placeholder="enter place of birth"
-            value={wrapProps.birthplace}
-            onChange={e => {
-              changeHandler(e);
-            }}
-          />
-        </label>
-        <label className="form-add__label">
-          <span className="form-add__name">Add genres</span>
+          <span className="form-add__name">Genres</span>
           <select className="form-add__input" onChange={e => {selectHandler(e, "genres");}}>
             <Query query={getGenresQuery}>
               {({ loading, error, data }) => {
@@ -88,11 +50,12 @@ const AuthorForm = ({
               }}
             </Query>
           </select>
+          <LinkCustom href="/genres"/>
         </label>
         {mapFromCache(genreIds, client, "genres", style)}
         <label className="form-add__label">
           <span className="form-add__name">
-            Add influenced authors (if any)
+            Influenced authors
           </span>
           <select className="form-add__input" onChange={e => {selectHandler(e, "authors");}}>
             <Query query={getAuthorsQuery}>
@@ -104,21 +67,12 @@ const AuthorForm = ({
           </select>
         </label>
         {mapFromCache(influenceIds, client, "authors", style)}
-        <label className="form-add__label">
-          <span className="form-add__name">Add biography</span>
-          <textarea
-            className="form-add__input"
-            name="biography"
-            placeholder="enter biography"
-            value={wrapProps.biography}
-            onChange={e => {
-              changeHandler(e);
-            }}
-          />
-        </label>
-        <button className="form-add__submit" onClick={e => {submitHandler(e);}}>
-          {formType === "edit-author" ? "Edit" : "Create"} author
-        </button>
+        <div className="form-add__btns">
+          <button className="form-add__submit" onClick={e => {submitHandler(e);}}>
+            {formType === "edit-author" ? "Save changes" : "Create author"}
+          </button>
+          <button className="form-add__close">Close</button>
+        </div>
       </section>
       <style jsx>{style}</style>
     </div>

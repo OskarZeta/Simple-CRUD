@@ -48,22 +48,21 @@ const WithCRU = FormComponent =>
       }
       return (
         <div>
-          {(ids.length === 0 || ids[0].length === 0) ? (
-            <div className="form-add__selected">No {type}</div>
-          ) : (
+          {(ids.length === 0 || ids[0].length === 0) ?
+            <div className="form-add__selected">No {type}</div> :
             <ul className="form-add__selected">
               {ids.map(id => {
                 if (id.length > 0) {
                   let data = client.cache.data.data[`${dataType}:${id}`];
                   return (
-                    <li key={id} onClick={() => {this.clickHandler(id, type);}}>
-                      {data.name}
+                    <li key={id}>
+                      <span className="form-add__selected-item" onClick={() => this.clickHandler(id, type)}>{data.name}</span>
                     </li>
                   );
                 } else return <div key={id}>No {type} selected</div>;
               })}
             </ul>
-          )}
+          }
           <style jsx>{style}</style>
         </div>
       );
@@ -127,82 +126,115 @@ const WithCRU = FormComponent =>
         this.setState(stateObj);
       }
     }
+    _fieldsCheck(type){
+      switch (type) {
+        case "book":
+          if (!this.state.name.trim()) {
+            alert('Enter name');
+          } else if (!this.state.authorId) {
+            alert('Enter author');
+          } else if (this.state.genreIds.size === 0){
+            alert('Select genres');
+          } else return true;
+          break;
+        case "author":
+        case "genre":
+          if (!this.state.name.trim()) {
+            alert('Enter name');
+          } else return true;
+          break;
+        default:
+          throw new Error('Wrong data type');
+      }
+    }
     submitHandler(e) {
       e.preventDefault();
       switch (this.props.formType) {
         case "add-genre":
-          this.props.addGenreQuery({
-            variables: {
-              name: this.state.name,
-              description: this.state.description,
-              relatedGenreIds: Array.from(this.state.genreIds)
-            }
-          });
+          if (this._fieldsCheck("genre")) {
+            this.props.addGenreQuery({
+              variables: {
+                name: this.state.name,
+                description: this.state.description,
+                relatedGenreIds: Array.from(this.state.genreIds)
+              }
+            });
+            this.setState({
+              ...this.props.defaultState
+            });
+          }
           break;
         case "edit-genre":
-          this.props.updateGenreQuery({
-            variables: {
-              id: this.state.id,
-              name: this.state.name,
-              description: this.state.description,
-              relatedGenreIds: Array.from(this.state.genreIds)
-            }
-          });
+          if (this._fieldsCheck("genre")) {
+            this.props.updateGenreQuery({
+              variables: {
+                id: this.state.id,
+                name: this.state.name,
+                description: this.state.description,
+                relatedGenreIds: Array.from(this.state.genreIds)
+              }
+            });
+          }
           break;
         case "add-author":
-          this.props.addAuthorQuery({
-            variables: {
-              name: this.state.name,
-              born: this.state.born,
-              died: this.state.died,
-              birthplace: this.state.birthplace,
-              genreIds: Array.from(this.state.genreIds),
-              influenceIds: Array.from(this.state.influenceIds),
-              biography: this.state.biography
-            }
-          });
+          if (this._fieldsCheck("author")) {
+            this.props.addAuthorQuery({
+              variables: {
+                name: this.state.name,
+                genreIds: Array.from(this.state.genreIds),
+                influenceIds: Array.from(this.state.influenceIds),
+                biography: this.state.biography
+              }
+            });
+            this.setState({
+              ...this.props.defaultState
+            });
+          }
           break;
         case "edit-author":
-          this.props.updateAuthorQuery({
-            variables: {
-              id: this.state.id,
-              name: this.state.name,
-              born: this.state.born,
-              died: this.state.died,
-              birthplace: this.state.birthplace,
-              genreIds: Array.from(this.state.genreIds),
-              influenceIds: Array.from(this.state.influenceIds),
-              biography: this.state.biography
-            }
-          });
+          if (this._fieldsCheck("author")) {
+            this.props.updateAuthorQuery({
+              variables: {
+                id: this.state.id,
+                name: this.state.name,
+                genreIds: Array.from(this.state.genreIds),
+                influenceIds: Array.from(this.state.influenceIds),
+                biography: this.state.biography
+              }
+            });
+          }
           break;
         case "add-book":
-          this.props.addBookQuery({
-            variables: {
-              name: this.state.name,
-              authorId: this.state.authorId,
-              genreIds: Array.from(this.state.genreIds),
-              description: this.state.description
-            }
-          });
+          if (this._fieldsCheck("book")) {
+            this.props.addBookQuery({
+              variables: {
+                name: this.state.name,
+                authorId: this.state.authorId,
+                genreIds: Array.from(this.state.genreIds),
+                description: this.state.description
+              }
+            });
+            this.setState({
+              ...this.props.defaultState
+            });
+          }
           break;
         case "edit-book":
-          this.props.updateBookQuery({
-            variables: {
-              id: this.state.id,
-              name: this.state.name,
-              authorId: this.state.authorId,
-              genreIds: Array.from(this.state.genreIds),
-              description: this.state.description
-            }
-          });
+          if (this._fieldsCheck("book")) {
+            this.props.updateBookQuery({
+              variables: {
+                id: this.state.id,
+                name: this.state.name,
+                authorId: this.state.authorId,
+                genreIds: Array.from(this.state.genreIds),
+                description: this.state.description
+              }
+            });
+          }
           break;
         default:
           throw new Error("wrong form type!");
       }
-      this.setState({
-        ...this.props.defaultState
-      });
     }
     render() {
       return (

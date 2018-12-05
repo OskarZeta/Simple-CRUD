@@ -9,10 +9,7 @@ import {
   updateBookQuery
 } from "../../queries/queries";
 import WithCRU from "../WithCRU/WithCRU";
-import GenresTable from "../GenresTable/GenresTable";
-import GenreForm from "../GenreForm/GenreForm";
-import AuthorsTable from "../AuthorsTable/AuthorsTable";
-import AuthorForm from "../AuthorForm/AuthorForm";
+import LinkCustom from "../LinkCustom/LinkCustom";
 import Popup from "../Popup/Popup";
 import style from "../../styles/form_add.js";
 
@@ -33,7 +30,7 @@ const BookForm = ({
     <div>
       <section className="form-add">
         <label className="form-add__label">
-          <span className="form-add__name">Add book</span>
+          <span className="form-add__name">Name</span>
           <input
             className="form-add__input"
             name="name"
@@ -46,7 +43,7 @@ const BookForm = ({
           />
         </label>
         <label className="form-add__label">
-          <span className="form-add__name">Add author</span>
+          <span className="form-add__name">Author</span>
           <select className="form-add__input" onChange={e => {selectHandler(e, "author");}}>
             <Query query={getAuthorsQuery}>
               {({ loading, error, data }) => {
@@ -55,28 +52,11 @@ const BookForm = ({
               }}
             </Query>
           </select>
-          <Popup trigger={<span style={{ width: "20px", height: "20px" }}>+</span>}>
-            <div>
-              <AuthorsTable />
-              <AuthorForm
-                formType="add-author"
-                defaultState={{
-                  name: "",
-                  born: "",
-                  died: "",
-                  birthplace: "",
-                  genreIds: new Set(),
-                  influenceIds: new Set(),
-                  biography: "",
-                  imagePath: ""
-                }}
-              />
-            </div>
-          </Popup>
+          <LinkCustom href="/authors"/>
         </label>
         {mapFromCache(authorId.split(), client, "author", style)}
         <label className="form-add__label">
-          <span className="form-add__name">Add related genres</span>
+          <span className="form-add__name">Related genres</span>
           <select className="form-add__input" onChange={e => {selectHandler(e, "genres");}}>
             <Query query={getGenresQuery}>
               {({ loading, error, data }) => {
@@ -85,23 +65,11 @@ const BookForm = ({
               }}
             </Query>
           </select>
-          <Popup trigger={<span style={{ width: "20px", height: "20px" }}>+</span>}>
-            <div>
-              <GenresTable />
-              <GenreForm
-                formType="add-genre"
-                defaultState={{
-                  name: "",
-                  genreIds: new Set(),
-                  description: ""
-                }}
-              />
-            </div>
-          </Popup>
+          <LinkCustom href="/genres"/>
         </label>
         {mapFromCache(genreIds, client, "genres", style)}
         <label className="form-add__label">
-          <span className="form-add__name">Add description</span>
+          <span className="form-add__name">Description</span>
           <textarea
             className="form-add__input"
             name="description"
@@ -112,9 +80,12 @@ const BookForm = ({
             }}
           />
         </label>
-        <button className="form-add__submit" onClick={e => {submitHandler(e);}}>
-          {formType === "edit-book" ? "Edit" : "Add"} book
-        </button>
+        <div className="form-add__btns">
+          <button className="form-add__submit" onClick={e => {submitHandler(e);}}>
+            {formType === "edit-book" ? "Save changes" : "Create book"}
+          </button>
+          <button className="form-add__close">Close</button>
+        </div>
       </section>
       <style jsx>{style}</style>
     </div>

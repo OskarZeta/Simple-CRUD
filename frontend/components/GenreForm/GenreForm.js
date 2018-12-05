@@ -25,7 +25,7 @@ const GenreForm = ({
     <div>
       <section className="form-add">
         <label className="form-add__label">
-          <span className="form-add__name">Add genre</span>
+          <span className="form-add__name">Name</span>
           <input
             className="form-add__input"
             type="text"
@@ -38,7 +38,7 @@ const GenreForm = ({
           />
         </label>
         <label className="form-add__label">
-          <span className="form-add__name">Add description</span>
+          <span className="form-add__name">Description</span>
           <textarea
             className="form-add__input"
             name="description"
@@ -50,7 +50,7 @@ const GenreForm = ({
           />
         </label>
         <label className="form-add__label">
-          <span className="form-add__name">Add related genres (if any)</span>
+          <span className="form-add__name">Related genres</span>
           <select className="form-add__input" onChange={e => {selectHandler(e, "genres");}}>
             <Query query={getGenresQuery}>
               {({ loading, error, data }) => {
@@ -61,9 +61,12 @@ const GenreForm = ({
           </select>
         </label>
         {mapFromCache(genreIds, client, "genres", style)}
-        <button className="form-add__submit" onClick={e => {submitHandler(e);}}>
-          {formType === "edit-genre" ? "Edit" : "Create"} genre
-        </button>
+        <div className="form-add__btns">
+          <button className="form-add__submit" onClick={e => {submitHandler(e);}}>
+            {formType === "edit-genre" ? "Save changes" : "Create genre"} 
+          </button>
+          <button className="form-add__close">Close</button>
+        </div>
       </section>
       <style jsx>{style}</style>
     </div>
