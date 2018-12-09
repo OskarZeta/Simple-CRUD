@@ -4,7 +4,8 @@ import ApolloClient from "apollo-boost";
 import "isomorphic-unfetch";
 
 const client = new ApolloClient({
-  uri: "http://localhost:3000/graphql"
+  //uri: "http://localhost:3000/graphql"
+  uri: `https://oskarzeta-crud.herokuapp.com/graphql`
 });
 
 export default ClientComponent => () =>

@@ -30,11 +30,10 @@
     "nodemon": "^1.18.7"
   },
   "scripts": {
+    "heroku-prebuild": "next build",
     "dev": "nodemon -w server -w package.json backend/server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node backend/server.js",
-    "storybook": "start-storybook -p 9001 -c .storybook",
-    "build-storybook": "build-storybook"
+    "start": "NODE_ENV=production node backend/server.js"
   },
   "browserslist": [
     ">0.2%",
