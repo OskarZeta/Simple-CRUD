@@ -33,7 +33,7 @@
     "heroku-prebuild": "next build",
     "dev": "nodemon -w server -w package.json backend/server.js",
     "build": "next build",
-    "start": "NODE_ENV=production backend/server.js"
+    "start": "NODE_ENV=production node backend/server.js"
   },
   "browserslist": [
     ">0.2%",
