@@ -103,7 +103,25 @@ const Mutation = new GraphQLObjectType({
       type: GenreType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parent, args) {
-        return Genre.findByIdAndRemove(args.id);
+        return Genre.updateMany(
+          { relatedGenreIds: args.id },
+          { $pull: { relatedGenreIds: args.id } }
+        )
+        .then(() => {
+          return Author.updateMany(
+            { genreIds: args.id },
+            { $pull: { genreIds: args.id } }
+          );
+        })
+        .then(() => {
+          return Book.updateMany(
+            { genreIds: args.id },
+            { $pull: { genreIds: args.id } }
+          );
+        })
+        .then(() => {
+          return Genre.findByIdAndRemove(args.id);
+        });
       }
     },
     addAuthor: {
@@ -161,7 +179,16 @@ const Mutation = new GraphQLObjectType({
       type: AuthorType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parent, args) {
-        return Author.findByIdAndRemove(args.id);
+        return Author.updateMany(
+          { influenceIds: args.id },
+          { $pull: { influenceIds: args.id } }
+        )
+        .then(() => {
+          return Book.remove({ authorId: args.id });
+        })
+        .then(() => {
+          return Author.findByIdAndRemove(args.id);
+        });
       }
     },
     addBook: {

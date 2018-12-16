@@ -46,7 +46,7 @@ const BooksTable = ({ deleteHandler }) => {
                       <td className="table__cell">{book.name}</td>
                       <td className="table__cell">{book.author.name}</td>
                       {book.genres.length === 0 ?
-                        <td>no genres</td> :
+                        <td className="table__cell">no genres</td> :
                         <td className="table__cell">
                           <table>
                             <tbody>
