@@ -3,7 +3,9 @@ const graphqlHTTP = require("express-graphql");
 const next = require("next");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const port = parseInt(process.env.PORT, 10) || 3000;
+//const port = parseInt(process.env.PORT, 10) || 3000;
+//const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -46,3 +48,14 @@ app.prepare().then(() => {
 });
 
 module.exports = app;
+//"NODE_ENV=production node backend/server.js"
+//next start
+//    "start": "SET NODE_ENV=production & nodemon backend/server.js",
+//    "heroku-postbuild": "next build"
+
+
+// "dev": "nodemon -w server -w package.json backend/server.js",
+// "build": "next build",
+// "prestart": "next build",
+// "start": "next start -p ${PORT}",
+// "heroku-postbuild": "next build"
